@@ -1,0 +1,20 @@
+{
+  "name": "ember-wiz",
+  "version": "0.1.0",
+  "description": "Lazy loading Ember routes",
+  "author": "ricottatosta <ricottatosta@gmail.com>",
+  "keywords": ["lazy", "loading", "ember", "route"],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ricottatosta/ember-wiz"
+  },
+  "main": "ember-wiz.js",
+  "license":"MIT",
+  "jspm": {
+    "format": "es6",
+    "dependencies": {
+      "ember": "github:components/ember@^2.0.0",
+      "hbs": "github:n-fuse/plugin-ember-hbs@^2.0.0"
+    }
+  }
+}
