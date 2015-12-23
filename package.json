@@ -1,6 +1,6 @@
 {
   "name": "ember-wiz",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lazy loading Ember routes",
   "author": "ricottatosta <ricottatosta@gmail.com>",
   "keywords": ["lazy", "loading", "ember", "route"],
