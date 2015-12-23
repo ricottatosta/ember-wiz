@@ -84,6 +84,6 @@ Modified RoutingService will be injected into routes and controllers as `routing
 
 Be awared: only methods using `RoutingService.transitionTo` will be able to lazily load routes!
 
-##To Do
+## To Do
 
 - ember-cli integration.
