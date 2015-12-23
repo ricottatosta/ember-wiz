@@ -58,8 +58,9 @@ Not tested with ember-cli yet.
     };
     var App = Ember.Application.create({EMBER_WIZ});
     App.deferReadiness();
-    ...
     Wiz(App);
+    ...
+    App.Router.map(...);
     ...
     App.advanceReadiness();
 
