@@ -21,14 +21,14 @@ function loadRoute(target) {
       var paths = [];
       var pod_dir = options.POD_DIR || "pod/";
 
-      nodes.forEach((v, i)=> {
-        if (v.length) {
+      nodes.forEach((node, i)=> {
+        if (node.length) {
           paths.push(nodes.slice(0, i + 1).join("/"));
         }
       });
 
-      paths.forEach((v, i)=> {
-        var nodes = v.split("/");
+      paths.forEach((path)=> {
+        var nodes = path.split("/");
         var baseName = nodes.join("-");
         var routeName = nodes.join(".");
         var factoryName = baseName.classify();
@@ -36,19 +36,19 @@ function loadRoute(target) {
 
         if (!(cache['route:' + fullName] && cache['route:' + fullName]["$wiz"])) {
           missing.push(Promise.all([
-            self.require(pod_dir + v + '/route'),
-            self.require(pod_dir + v + '/controller'),
-            self.require(pod_dir + v + '/template.hbs!')
+            self.require(pod_dir + path + '/route'),
+            self.require(pod_dir + path + '/controller'),
+            self.require(pod_dir + path + '/template.hbs!')
           ]).then(function (modules) {
             var routeInstance;
 
-            Ember.TEMPLATES[v] = modules[2];
+            Ember.TEMPLATES[path] = modules[2];
 
-            registry.register('controller:' + fullName, App[factoryName + 'Controller'] || modules[1]);
+            registry.register('controller:' + fullName, App[factoryName + 'Controller'] || modules[1].default);
 
             registry.unregister('route:' + fullName);
             container.reset('route:' + fullName);
-            registry.register('route:' + fullName, App[factoryName + 'Route'] || modules[0]);
+            registry.register('route:' + fullName, App[factoryName + 'Route'] || modules[0].default);
 
             routeInstance = container.lookup('route:' + fullName);
             routeInstance.set('routeName', routeName);
