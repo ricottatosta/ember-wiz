@@ -66,24 +66,29 @@ Not tested with ember-cli yet.
 
 ## Key Components
 
-`[ApplicationInstance].require(module)`
+`[application:main].require(module)`
 
 Used to wrap standard Promise (System.import). Returns an Ember Promise.
 
-`[ApplicationInstance].loadRoute(target)`
+`[application:main].loadRoute(target)`
 
 Used to preload and register factories and to cache factory instances. Returns an Ember Promise.
 
-`[ApplicationInstance].Router.startRouting()`
+`[router:main].startRouting()`
 
 Overridden to implement lazy loading at initial URL.
 
-`[ApplicationInstance].RoutingService.transitionTo()`
+`[service:Routing].transitionTo()`
 
 Overridden to implement lazy loading at transition time, either by `linkTo` component or by using it in actions.
-Modified RoutingService will be injected into routes and controllers as `routing` property to ease route transition by actions.
 
-Be aware: only methods using `RoutingService.transitionTo` will be able to lazily load routes!
+`[RouteInstance].routing.transitionTo()`
+
+`[ControllerInstance].routing.transitionTo()`
+
+Modified RoutingService is injected into routes and controllers as `routing` property to ease route transition by actions.
+
+Be aware: only methods using `routing.transitionTo` will be able to lazily load routes!
 
 ## To Do
 
