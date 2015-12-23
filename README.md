@@ -82,7 +82,7 @@ Overridden to implement lazy loading at initial URL.
 Overridden to implement lazy loading at transition time, either by `linkTo` component or by using it in actions.
 Modified RoutingService will be injected into routes and controllers as `routing` property to ease route transition by actions.
 
-Be awared: only methods using `RoutingService.transitionTo` will be able to lazily load routes!
+Be aware: only methods using `RoutingService.transitionTo` will be able to lazily load routes!
 
 ## To Do
 
