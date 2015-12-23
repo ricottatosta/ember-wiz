@@ -34,12 +34,14 @@ function loadRoute(target) {
         var factoryName = baseName.classify();
         var fullName = baseName.camelize();
 
-        if (!(cache['route:' + fullName] && cache['route:' + fullName][options.CUST_PROP || "isCustom"])) {
+        if (!(cache['route:' + fullName] && cache['route:' + fullName]["$wiz"])) {
           missing.push(Promise.all([
             self.require(pod_dir + v + '/route'),
             self.require(pod_dir + v + '/controller'),
             self.require(pod_dir + v + '/template.hbs!')
           ]).then(function (modules) {
+            var routeInstance;
+
             Ember.TEMPLATES[v] = modules[2];
 
             registry.register('controller:' + fullName, App[factoryName + 'Controller'] || modules[1]);
@@ -47,7 +49,10 @@ function loadRoute(target) {
             registry.unregister('route:' + fullName);
             container.reset('route:' + fullName);
             registry.register('route:' + fullName, App[factoryName + 'Route'] || modules[0]);
-            container.lookup('route:' + fullName).set('routeName', routeName);
+
+            routeInstance = container.lookup('route:' + fullName);
+            routeInstance.set('routeName', routeName);
+            routeInstance.set('$wiz', true);
           }));
         }
       });
@@ -107,4 +112,6 @@ export default function (application) {
   application.loadRoute = loadRoute.bind(application);
   application.Router = Router.extend({application});
   application.RoutingService = Routing.extend({application});
-}
+  application.inject('route', 'routing', 'service:Routing');
+  application.inject('controller', 'routing', 'service:Routing');
+};
