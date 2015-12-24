@@ -1,3 +1,5 @@
+import 'ember';
+
 function require(module) {
   return new Ember.RSVP.Promise(function (resolve, reject) {
     System.import(module).then(resolve).catch(reject);
@@ -44,11 +46,11 @@ function loadRoute(target) {
 
             Ember.TEMPLATES[path] = modules[2];
 
-            registry.register('controller:' + fullName, App[factoryName + 'Controller'] || modules[1].default);
+            registry.register('controller:' + fullName, self[factoryName + 'Controller'] || modules[1].default);
 
             registry.unregister('route:' + fullName);
             container.reset('route:' + fullName);
-            registry.register('route:' + fullName, App[factoryName + 'Route'] || modules[0].default);
+            registry.register('route:' + fullName, self[factoryName + 'Route'] || modules[0].default);
 
             routeInstance = container.lookup('route:' + fullName);
             routeInstance.set('routeName', routeName);
