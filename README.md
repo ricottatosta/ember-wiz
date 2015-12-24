@@ -5,7 +5,7 @@ Works only for routes organized in POD, as follow:
 
 route mapping
 
-    [ApplicationInstance].Router.map(function() {
+    [application:main].Router.map(function() {
       this.route('posts', function() {
         this.route('post');
       });
@@ -42,8 +42,8 @@ Not tested with ember-cli yet.
 ## Requirements
 
 - [jspm](http://jspm.io);
-- [ember](https://github.com/components/ember);
-- [hbs](https://github.com/n-fuse/plugin-ember-hbs).
+- [ember](https://github.com/components/ember) >= 2.0.0;
+- [hbs](https://github.com/n-fuse/plugin-ember-hbs) >= 2.0.0.
 
 ## Installation
 
