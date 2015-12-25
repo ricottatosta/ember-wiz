@@ -18,23 +18,23 @@ directory schema
     pod
       |-application
         |-controller.js
-        |-router.js
+        |-route.js
         |-template.hbs
       |-index
         |-controller.js
-        |-router.js
+        |-route.js
         |-template.hbs
       |-posts
         |-index
           |-controller.js
-          |-router.js
+          |-route.js
           |-template.hbs
         |-post
           |-controller.js
-          |-router.js
+          |-route.js
           |-template.hbs
         |-controller.js
-        |-router.js
+        |-route.js
         |-template.hbs
 
 Not tested with ember-cli yet.
@@ -72,7 +72,7 @@ Used to wrap standard Promise (System.import). Returns an Ember Promise.
 
 `[application:main].loadRoute(target)`
 
-Used to preload and register factories and to cache factory instances. Returns an Ember Promise.
+Used to preload and register factories and to cache factory instances. It preloads route, controller and template files of any route in the target not loaded yet. Returns an Ember Promise.
 
 `[router:main].startRouting()`
 
@@ -92,4 +92,5 @@ Be aware: only methods using `routing.transitionTo` will be able to lazily load 
 
 ## To Do
 
-- ember-cli integration.
+- ember-cli integration;
+- bundling and minification.
