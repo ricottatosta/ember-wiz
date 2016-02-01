@@ -1,7 +1,7 @@
 {
   "name": "ember-wiz",
   "version": "0.1.2",
-  "description": "Lazy loading of Ember routes with SystemJS",
+  "description": "Lazy loading of Ember routes through SystemJS",
   "author": "ricottatosta <ricottatosta@gmail.com>",
   "keywords": ["lazy", "loading", "ember", "route"],
   "repository": {
@@ -11,7 +11,7 @@
   "main": "ember-wiz.js",
   "license":"MIT",
   "jspm": {
-    "format": "es6",
+    "format": "amd",
     "dependencies": {
       "ember": "github:components/ember@^2.0.0",
       "hbs": "github:n-fuse/plugin-ember-hbs@^2.0.0"

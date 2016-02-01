@@ -51,24 +51,25 @@ Not tested with ember-cli yet.
 
 ## Usage
 
-    import Wiz from 'ember-wiz';
-    ...
-    var EMBER_WIZ = {
-      "POD_DIR": your_pod_dir // default: "pod/"
-    };
-    var App = Ember.Application.create({EMBER_WIZ});
-    App.deferReadiness();
-    Wiz(App);
-    ...
-    App.Router.map(...);
-    ...
-    App.advanceReadiness();
+    define(['ember-wiz'], function(dep_1) {
+        var ember-wiz = dep_1.default;
+        
+        var App = Ember.Application.extend({
+            "EMBER_WIZ": {
+                POD_DIR": your_pod_dir, // default: "pods/",
+                "COMPILED_HBS": false // if template are pre-compiled, set to true
+            }
+        });
+        
+        App.deferReadiness();
+        ember-wiz(App);
+        ...
+        App.Router.map(...);
+        ...
+        App.advanceReadiness();
+    });
 
 ## Key Components
-
-`[application:main].require(module)`
-
-Used to wrap standard Promise (System.import). Returns an Ember Promise.
 
 `[application:main].loadRoute(target)`
 

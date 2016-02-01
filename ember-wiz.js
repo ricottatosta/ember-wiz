@@ -1,119 +1,123 @@
-import 'ember';
+/*
+ * @overview  Ember Wiz - Lazy loading of Ember routes through SystemJS
+ * @copyright Copyright 2015-2016 ProgHettoLab, an Integrated Planning Workshop
+ * @license   Licensed under MIT license
+ * @version   0.1.2
+ *
+ */
 
-function require(module) {
-  return new Ember.RSVP.Promise(function (resolve, reject) {
-    System.import(module).then(resolve).catch(reject);
-  });
-}
-
-function loadRoute(target) {
-  var Promise = Ember.RSVP.Promise;
-  var self = this;
-  var options = this.EMBER_WIZ || {};
-
-  return new Promise(function (resolve, reject) {
-    var nodes = target.split('.');
-
-    if (nodes.length) {
-      var router = self.get('__container__').lookup('router:main');
-      var container = router.container;
-      var cache = container.cache;
-      var registry = container.registry;
-      var missing = [];
-      var paths = [];
-      var pod_dir = options.POD_DIR || "pod/";
-
-      nodes.forEach((node, i)=> {
-        if (node.length) {
-          paths.push(nodes.slice(0, i + 1).join("/"));
-        }
-      });
-
-      paths.forEach((path)=> {
-        var nodes = path.split("/");
-        var baseName = nodes.join("-");
-        var routeName = nodes.join(".");
-        var factoryName = baseName.classify();
-        var fullName = baseName.camelize();
-
-        if (!(cache['route:' + fullName] && cache['route:' + fullName]["$wiz"])) {
-          missing.push(Promise.all([
-            self.require(pod_dir + path + '/route'),
-            self.require(pod_dir + path + '/controller'),
-            self.require(pod_dir + path + '/template.hbs!')
-          ]).then(function (modules) {
-            var routeInstance;
-
-            Ember.TEMPLATES[path] = modules[2];
-
-            registry.register('controller:' + fullName, self[factoryName + 'Controller'] || modules[1].default);
-
-            registry.unregister('route:' + fullName);
-            container.reset('route:' + fullName);
-            registry.register('route:' + fullName, self[factoryName + 'Route'] || modules[0].default);
-
-            routeInstance = container.lookup('route:' + fullName);
-            routeInstance.set('routeName', routeName);
-            routeInstance.set('$wiz', true);
-          }));
-        }
-      });
-
-      Promise.all(missing).then(resolve);
+define([
+    'ember'
+], function () {
+    function init(application) {
+        application.Router = Router.extend({"EMBER_WIZ": application.EMBER_WIZ});
+        application.RoutingService = Routing.extend();
+        application.inject('route', 'routing', 'service:Routing');
+        application.inject('controller', 'routing', 'service:Routing');
     }
-    else {
-      resolve();
-    }
-  });
-}
 
-var Router = Ember.Router.extend({
-  startRouting (moduleBasedResolver) {
-    var application = this.get('application');
-    var initialURL = this.get('initialURL');
+    var Router = Ember.Router.extend({
+        loadRoute (target) {
+            var self = this;
+            var options = this.EMBER_WIZ || {};
+            var pod_dir = options.POD_DIR || "pods/";
+            var handlers = self.get('router.recognizer.names')[target].handlers;
+            var application = self.get('namespace');
+            var owner = Ember.getOwner(self);
+            var container = owner.__container__;
+            var cache = container.cache;
+            var registry = container.registry;
+            var missing = [];
 
-    if (this.setupRouter(moduleBasedResolver)) {
-      if (typeof initialURL === "undefined") {
-        initialURL = this.get('location').getURL();
-      }
+            return new Promise(function (resolve) {
+                handlers.forEach((handler)=> {
+                    var routeName = handler.handler;
+                    var path = routeName.replace(/(\.)/g, "/");
+                    var baseName = routeName.replace(/(\.)/g, "-");
+                    var factoryName = baseName.classify();
+                    var fullName = baseName.camelize();
 
-      var recognizer = this.router.recognizer;
-      var recognize = recognizer.recognize.bind(recognizer);
-      var handlers = recognize(initialURL);
-      var target = handlers[handlers.length - 1].handler;
-      var self = this;
+                    if (!(cache['route:' + fullName] && cache['route:' + fullName]["$wiz"])) {
+                        //application[factoryName + 'LoadingRoute'] = application.LoadingRoute.extend();
+                        //application[factoryName + 'LoadingController'] = application.LoadingController.extend();
+                        //Ember.TEMPLATES[path + '/loading'] = Ember.TEMPLATES['loading'];
+                        //
+                        //application[factoryName + 'ErrorRoute'] = application.ErrorRoute.extend();
+                        //application[factoryName + 'ErrorController'] = application.ErrorController.extend();
+                        //Ember.TEMPLATES[path + '/error'] = Ember.TEMPLATES['error'];
 
-      Ember.RSVP.Promise.all([
-        application.loadRoute('application'),
-        application.loadRoute(target)
-      ]).then(function () {
-        var initialTransition = self.handleURL(initialURL);
+                        missing.push(
+                            Promise.all([
+                                    pod_dir + path + '/route',
+                                    pod_dir + path + '/controller',
+                                    pod_dir + path + '/template' + (options.COMPILED_HBS ? "" : ".hbs!")
+                                ].map((module)=> System.import(module))
+                            ).then(function (modules) {
+                                var _route = modules[0].default;
+                                var _controller = modules[1].default;
+                                var _template = modules[2];
 
-        if (initialTransition && initialTransition.error) {
-          throw initialTransition.error;
+                                var routeInstance;
+
+                                if (!options.COMPILED_HBS) Ember.TEMPLATES[path] = _template;
+
+                                registry.register('controller:' + fullName, application[factoryName + 'Controller'] || _controller);
+
+                                registry.unregister('route:' + fullName);
+                                container.reset('route:' + fullName);
+                                registry.register('route:' + fullName, application[factoryName + 'Route'] || _route);
+
+                                routeInstance = container.lookup('route:' + fullName);
+                                routeInstance.set('routeName', routeName);
+                                routeInstance.set('$wiz', true);
+                            })
+                        );
+                    }
+                });
+
+                Promise.all(missing).then(resolve);
+            });
+        },
+        startRouting (moduleBasedResolver) {
+            var initialURL = this.get('initialURL');
+
+            if (this.setupRouter(moduleBasedResolver)) {
+                if (typeof initialURL === "undefined") {
+                    initialURL = this.get('location').getURL();
+                }
+
+                var recognizer = this.router.recognizer;
+                var recognize = recognizer.recognize.bind(recognizer);
+                var handlers = recognize(initialURL);
+                var target = handlers[handlers.length - 1].handler;
+                var self = this;
+
+                this.loadRoute(target).then(function () {
+                    var initialTransition = self.handleURL(initialURL);
+
+                    if (initialTransition && initialTransition.error) {
+                        throw initialTransition.error;
+                    }
+                });
+            }
         }
-      });
-    }
-  }
-});
-
-var Routing = Ember.__loader.require('ember-routing/services/routing').default.extend({
-  transitionTo (routeName, models, queryParams, shouldReplace) {
-    var self = this;
-    var _super = this._super;
-    var superArgs = arguments;
-
-    this.get('application').loadRoute(routeName).then(function () {
-      _super.apply(self, superArgs);
     });
-  }
-});
 
-export default function (application) {
-  application.require = require;
-  application.loadRoute = loadRoute.bind(application);
-  application.Router = Router.extend({application});
-  application.RoutingService = Routing.extend({application});
-  application.inject('route', 'routing', 'service:Routing');
-  application.inject('controller', 'routing', 'service:Routing');
-};
+    var RoutingService = Ember.__loader.require('ember-routing/services/routing').default.extend({
+        transitionTo (routeName, models, queryParams, shouldReplace) {
+            var self = this;
+            var _super = this._super;
+            var superArgs = arguments;
+
+            this.get('router').loadRoute(routeName).then(function () {
+                _super.apply(self, superArgs);
+            });
+        }
+    });
+
+    return {
+        "default": init,
+        Router,
+        RoutingService
+    };
+});
