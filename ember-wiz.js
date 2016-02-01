@@ -2,7 +2,7 @@
  * @overview  Ember Wiz - Lazy loading of Ember routes through SystemJS
  * @copyright Copyright 2015-2016 ProgHettoLab, an Integrated Planning Workshop
  * @license   Licensed under MIT license
- * @version   0.1.2
+ * @version   0.1.5
  *
  */
 
@@ -11,7 +11,7 @@ define([
 ], function () {
     function init(application) {
         application.Router = Router.extend({"EMBER_WIZ": application.EMBER_WIZ});
-        application.RoutingService = Routing.extend();
+        application.RoutingService = RoutingService.extend();
         application.inject('route', 'routing', 'service:Routing');
         application.inject('controller', 'routing', 'service:Routing');
     }
@@ -86,7 +86,7 @@ define([
                     initialURL = this.get('location').getURL();
                 }
 
-                var recognizer = this.router.recognizer;
+                var recognizer = this.get('router.recognizer');
                 var recognize = recognizer.recognize.bind(recognizer);
                 var handlers = recognize(initialURL);
                 var target = handlers[handlers.length - 1].handler;

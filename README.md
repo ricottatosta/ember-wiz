@@ -57,7 +57,7 @@ Not tested with ember-cli yet.
         var App = Ember.Application.extend({
             "EMBER_WIZ": {
                 POD_DIR": your_pod_dir, // default: "pods/",
-                "COMPILED_HBS": false // if template are pre-compiled, set to true
+                "COMPILED_HBS": false // if templates are pre-compiled, set to true
             }
         });
         

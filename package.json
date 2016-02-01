@@ -1,6 +1,6 @@
 {
   "name": "ember-wiz",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Lazy loading of Ember routes through SystemJS",
   "author": "ricottatosta <ricottatosta@gmail.com>",
   "keywords": ["lazy", "loading", "ember", "route"],
