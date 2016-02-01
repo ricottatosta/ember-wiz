@@ -69,11 +69,27 @@ Not tested with ember-cli yet.
         App.advanceReadiness();
     });
 
-## Key Components
+## How does it work
 
-`[application:main].loadRoute(target)`
+It is an AMD module following ES6 module behavior. It will be exported as follow:
 
-Used to preload and register factories and to cache factory instances. It preloads route, controller and template files of any route in the target not loaded yet. Returns an Ember Promise.
+`{"default": decorator, "Router": Router, "RoutingService": RoutingService};`
+
+It can be used as decorator:
+
+`module.default(applicationInstance);`
+
+or extending each component:
+
+`[application:main].Router = module.Router.extend();`
+
+`[application:main].RoutingService = module.RoutingService.extend();`
+
+## Key components
+
+`[router:main].loadRoute(target)`
+
+Used to preload and register factories and to cache factory instances. It preloads route, controller and template files of any route in the target not loaded yet, `route:application`  included. Returns an Ember Promise.
 
 `[router:main].startRouting()`
 
@@ -87,7 +103,7 @@ Overridden to implement lazy loading at transition time, either by `linkTo` comp
 
 `[ControllerInstance].routing.transitionTo()`
 
-Modified RoutingService is injected into routes and controllers as `routing` property to ease route transition by actions.
+If used as decorator, modified RoutingService is injected into routes and controllers as `routing` property to ease route transition by actions.
 
 Be aware: only methods using `routing.transitionTo` will be able to lazily load routes!
 
