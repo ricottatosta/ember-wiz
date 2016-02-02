@@ -1,7 +1,7 @@
 # Ember Wiz
 
-Lazy loading of Ember routes through SystemJS.
-Works only for routes organized in POD, as follow:
+AMD module for lazy loading of Ember routes.
+Works with [SystemJS](https://github.com/systemjs/systemjs), only for routes organized in POD as follow:
 
 route mapping
 
@@ -19,23 +19,23 @@ directory schema
       |-application
         |-controller.js
         |-route.js
-        |-template.hbs
+        |-template.(hbs|js)
       |-index
         |-controller.js
         |-route.js
-        |-template.hbs
+        |-template.(hbs|js)
       |-posts
         |-index
           |-controller.js
           |-route.js
-          |-template.hbs
+          |-template.(hbs|js)
         |-post
           |-controller.js
           |-route.js
-          |-template.hbs
+          |-template.(hbs|js)
         |-controller.js
         |-route.js
-        |-template.hbs
+        |-template.(hbs|js)
 
 Not tested with ember-cli yet.
 
@@ -47,26 +47,26 @@ Not tested with ember-cli yet.
 
 ## Installation
 
-    jspm install git://github.com/ricottatosta/ember-wiz
+    jspm install ember-wiz
 
 ## Usage
 
-    define(['ember-wiz'], function(dep_1) {
-        var ember-wiz = dep_1.default;
+    System.import('ember-wiz').then(function(module) {
+      var init = module.default;
         
-        var App = Ember.Application.extend({
-            "EMBER_WIZ": {
-                POD_DIR": your_pod_dir, // default: "pods/",
-                "COMPILED_HBS": false // if templates are pre-compiled, set to true
-            }
-        });
+      var App = Ember.Application.extend({
+        "EMBER_WIZ": {
+          "POD_DIR": your_pod_dir, // default: "pods/",
+          "COMPILED_HBS": false // if templates are pre-compiled, set to true
+        }
+      });
         
-        App.deferReadiness();
-        ember-wiz(App);
-        ...
-        App.Router.map(...);
-        ...
-        App.advanceReadiness();
+      App.deferReadiness();
+      init(App);
+      ...
+      App.Router.map(...);
+      ...
+      App.advanceReadiness();
     });
 
 ## How does it work
@@ -109,5 +109,4 @@ Be aware: only methods using `routing.transitionTo` will be able to lazily load 
 
 ## To Do
 
-- ember-cli integration;
-- bundling and minification.
+- ember-cli integration (if possible).
